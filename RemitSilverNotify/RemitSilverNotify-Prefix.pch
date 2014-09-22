@@ -44,7 +44,7 @@
 
 #define IS_OK(dict)   [dict[@"retcode"] isEqualToString:@"0"]
 #define SHOW_ERROR_MESSAGE_TOAST(view)  [view makeToast:result[@"retmsg"]]
-#define SHOW_BAD_NET_TOAST(view)        [view makeToast:@"网络不给力,服务器无响应"]
+#define SHOW_BAD_NET_TOAST(view)        [view makeToast:@"网络不给力,或者服务器无响应"]
 #define DEBUG_RETAIN_COUNT(_instance)  CFGetRetainCount((__bridge CFTypeRef)_instance)
 #define CHECK_NETWORK_AND_SHOW_TOAST(view)    if ( ! [Utility isNetworkReachable]) { \
                                                   [view makeToast:@"当前网络不可用,请检查网络连接."]; \

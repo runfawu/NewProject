@@ -93,6 +93,23 @@
         NSArray *dataArray = resultDict[@"allapps"];
         for (NSDictionary *dict in dataArray) {
             SortAppObject *sortAppObj = [[SortAppObject alloc] initWithDict:dict];
+            NSArray *appArray = sortAppObj.appArray;
+            if (appArray.count > 0) {
+                for (AppObject *appObj in appArray) {
+                    BOOL existed = NO;
+                    for (AppObject *existedObj in self.existedAppArray) {
+                        if ([existedObj.busicode isEqualToString:appObj.busicode]) {
+                            existed = YES;
+                            break;
+                        }
+                    }
+                    if (existed) {
+                        appObj.actiontype = kAddAction;
+                    } else {
+                        appObj.actiontype = kDeleteAction;
+                    }
+                }
+            }
             [self.sortAppArray addObject:sortAppObj];
         }
         [self.tableView reloadData];
@@ -128,7 +145,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     AddAppController *addAppController = [[AddAppController alloc] initWithNibName:@"AddAppController" bundle:nil];
     SortAppObject *sortAppObj = self.sortAppArray[indexPath.row];
-    addAppController.appArray = [NSArray arrayWithArray:sortAppObj.appArray];
+    addAppController.appArray = sortAppObj.appArray;  //[NSArray arrayWithArray:sortAppObj.appArray];
     addAppController.existedAppArray = [self.existedAppArray mutableCopy];
     
     [self.navigationController pushViewController:addAppController animated:YES];

@@ -10,4 +10,6 @@
 
 @interface AppWebController : BaseViewController
 
+@property (nonatomic, strong) NSString *urlString;
+
 @end

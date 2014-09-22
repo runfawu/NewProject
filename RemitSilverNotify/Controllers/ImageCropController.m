@@ -25,6 +25,8 @@
 @property (nonatomic, assign) CGFloat limitRatio;
 @property (nonatomic, assign) CGRect latestFrame;
 
+@property (nonatomic, strong) HttpRequest *headImageRequest;
+
 @end
 
 @implementation ImageCropController
@@ -35,6 +37,8 @@
     self.editedImage = nil;
     self.overlayView = nil;
     self.ratioView = nil;
+    
+    self.headImageRequest = nil;
 }
 
 - (id)initWithImage:(UIImage *)originalImage cropFrame:(CGRect)cropFrame limitScaleRatio:(NSInteger)limitRatio {
@@ -51,8 +55,96 @@
 {
     [super viewDidLoad];
     [self initView];
-    [self initControlBtn];
+    [self configNavi];
+//    [self initControlBtn];
 }
+
+- (void)configNavi
+{
+    UIImage *image = [[UIImage imageNamed:@"tabbar_bg"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 10, 10) resizingMode:UIImageResizingModeStretch];
+    [self.navigationController.navigationBar setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
+    
+    NSShadow *shadow = [[NSShadow alloc] init];
+    shadow.shadowOffset = CGSizeMake(-1, 0);
+    shadow.shadowBlurRadius = 5;
+    self.navigationController.navigationBar.titleTextAttributes = @{NSFontAttributeName : [UIFont systemFontOfSize:15],
+                                                                    NSForegroundColorAttributeName : [UIColor whiteColor],
+                                                                    }; //NSShadowAttributeName : shadow
+    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [backButton setImage:[UIImage imageNamed:@"main_back.png"] forState:UIControlStateNormal];
+    backButton.frame = CGRectMake(0, 12, 20, 19);
+    [backButton addTarget:self action:@selector(clickBack:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rightButton.frame = CGRectMake(18, 0, 45, 26);
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"main_confim_n"] forState:UIControlStateNormal];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"main_confim_h"] forState:UIControlStateHighlighted];
+    [rightButton setTitle:@"确定" forState:UIControlStateNormal];
+    rightButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [rightButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(clickSave:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    
+
+}
+
+- (void)clickBack:(id)sender
+{
+    if (self.delegate && [self.delegate conformsToProtocol:@protocol(ImageCropDelegate)]) {
+        [self.delegate imageCropDidCancel:self];
+    }
+
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)clickSave:(id)sender
+{
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    NSString *url= [NSString stringWithFormat:@"%@/account/updatePersonalPhoto.do", HOST_URL];
+    
+    UIImage *image = [self getSubImage];
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
+    NSString *imageDataString = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    
+    NSMutableDictionary *paramDict = [NSMutableDictionary dictionary];
+    [paramDict setObject:[RunTimeData sharedData].userInfoObj.userId forKey:@"userid"];
+    [paramDict setObject:[RunTimeData sharedData].userInfoObj.token forKey:@"token"];
+    [paramDict setObject:imageDataString forKey:@"pic"];
+    
+    __weak typeof(&*self) weakSelf = self;
+    
+    self.headImageRequest = [[HttpRequest alloc] init];
+    [self.headImageRequest postRequestWithURLString:url params:paramDict successBlock:^(id result) {
+        weakSelf.headImageRequest = nil;
+        [MBProgressHUD hideHUDForView:weakSelf.view animated:YES];
+        NSDictionary *resultDict = result;
+        if (IS_OK(resultDict)) {
+            [weakSelf.view makeToast:@"保存成功"];
+            if (weakSelf.delegate && [weakSelf.delegate conformsToProtocol:@protocol(ImageCropDelegate)]) {
+                [weakSelf.delegate imageCrop:weakSelf didFinished:[weakSelf getSubImage]];
+                [weakSelf dismissViewControllerAnimated:YES completion:nil];
+            }
+        } else {
+            SHOW_ERROR_MESSAGE_TOAST(weakSelf.view);
+            [weakSelf dismissViewControllerAnimated:YES completion:nil];
+        }
+    } failureBlock:^(NSString *failureString) {
+        weakSelf.headImageRequest = nil;
+        [MBProgressHUD hideHUDForView:weakSelf.view animated:YES];
+        SHOW_BAD_NET_TOAST(weakSelf.view);
+        [weakSelf dismissViewControllerAnimated:YES completion:nil];
+    }];
+}
+
+
+- (void)requestDataOfHeadImage
+{
+    
+}
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
     return NO;
@@ -96,46 +188,46 @@
     [self overlayClipping];
 }
 
-- (void)initControlBtn {
-    UIButton *cancelBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 50.0f, 100, 50)];
-    cancelBtn.backgroundColor = [UIColor blackColor];
-    cancelBtn.titleLabel.textColor = [UIColor whiteColor];
-    [cancelBtn setTitle:@"Cancel" forState:UIControlStateNormal];
-    [cancelBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
-    [cancelBtn.titleLabel setTextAlignment:NSTextAlignmentCenter];
-    [cancelBtn.titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
-    [cancelBtn.titleLabel setNumberOfLines:0];
-    [cancelBtn setTitleEdgeInsets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-    [cancelBtn addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:cancelBtn];
-    
-    UIButton *confirmBtn = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 100.0f, self.view.frame.size.height - 50.0f, 100, 50)];
-    confirmBtn.backgroundColor = [UIColor blackColor];
-    confirmBtn.titleLabel.textColor = [UIColor whiteColor];
-    [confirmBtn setTitle:@"OK" forState:UIControlStateNormal];
-    [confirmBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
-    [confirmBtn.titleLabel setTextAlignment:NSTextAlignmentCenter];
-    confirmBtn.titleLabel.textColor = [UIColor whiteColor];
-    [confirmBtn.titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
-    [confirmBtn.titleLabel setNumberOfLines:0];
-    [confirmBtn setTitleEdgeInsets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
-    [confirmBtn addTarget:self action:@selector(confirm:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:confirmBtn];
-}
+//- (void)initControlBtn {
+//    UIButton *cancelBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 50.0f, 100, 50)];
+//    cancelBtn.backgroundColor = [UIColor blackColor];
+//    cancelBtn.titleLabel.textColor = [UIColor whiteColor];
+//    [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
+//    [cancelBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
+//    [cancelBtn.titleLabel setTextAlignment:NSTextAlignmentCenter];
+//    [cancelBtn.titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
+//    [cancelBtn.titleLabel setNumberOfLines:0];
+//    [cancelBtn setTitleEdgeInsets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+//    [cancelBtn addTarget:self action:@selector(cancel:) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:cancelBtn];
+//    
+//    UIButton *confirmBtn = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 100.0f, self.view.frame.size.height - 50.0f, 100, 50)];
+//    confirmBtn.backgroundColor = [UIColor blackColor];
+//    confirmBtn.titleLabel.textColor = [UIColor whiteColor];
+//    [confirmBtn setTitle:@"保存" forState:UIControlStateNormal];
+//    [confirmBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:18.0f]];
+//    [confirmBtn.titleLabel setTextAlignment:NSTextAlignmentCenter];
+//    confirmBtn.titleLabel.textColor = [UIColor whiteColor];
+//    [confirmBtn.titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
+//    [confirmBtn.titleLabel setNumberOfLines:0];
+//    [confirmBtn setTitleEdgeInsets:UIEdgeInsetsMake(5.0f, 5.0f, 5.0f, 5.0f)];
+//    [confirmBtn addTarget:self action:@selector(confirm:) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:confirmBtn];
+//}
 
-- (void)cancel:(id)sender
-{
-    if (self.delegate && [self.delegate conformsToProtocol:@protocol(ImageCropDelegate)]) {
-        [self.delegate imageCropDidCancel:self];
-    }
-}
+//- (void)cancel:(id)sender
+//{
+//    if (self.delegate && [self.delegate conformsToProtocol:@protocol(ImageCropDelegate)]) {
+//        [self.delegate imageCropDidCancel:self];
+//    }
+//}
 
-- (void)confirm:(id)sender
-{
-    if (self.delegate && [self.delegate conformsToProtocol:@protocol(ImageCropDelegate)]) {
-        [self.delegate imageCrop:self didFinished:[self getSubImage]];
-    }
-}
+//- (void)confirm:(id)sender
+//{
+//    if (self.delegate && [self.delegate conformsToProtocol:@protocol(ImageCropDelegate)]) {
+//        [self.delegate imageCrop:self didFinished:[self getSubImage]];
+//    }
+//}
 
 - (void)overlayClipping
 {

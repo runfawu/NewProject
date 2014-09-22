@@ -63,20 +63,20 @@
 #pragma mark - Private methods
 - (void)setup
 {
-    for (AppObject *appObj in self.appArray) {
-        BOOL existed = NO;
-        for (AppObject *existedObj in self.existedAppArray) {
-            if ([existedObj.busicode isEqualToString:appObj.busicode]) {
-                existed = YES;
-                break;
-            }
-        }
-        if (existed) {
-            appObj.actiontype = kAddAction;
-        } else {
-            appObj.actiontype = kDeleteAction;
-        }
-    }
+//    for (AppObject *appObj in self.appArray) {
+//        BOOL existed = NO;
+//        for (AppObject *existedObj in self.existedAppArray) {
+//            if ([existedObj.busicode isEqualToString:appObj.busicode]) {
+//                existed = YES;
+//                break;
+//            }
+//        }
+//        if (existed) {
+//            appObj.actiontype = kAddAction;
+//        } else {
+//            appObj.actiontype = kDeleteAction;
+//        }
+//    }
     
     self.sourceAppArray = [NSMutableArray array];
     for (AppObject *displayObj in self.appArray) {
@@ -177,6 +177,9 @@
     DLog(@"********************* commit *************");
     for (AppObject *commitObj in commitArray) {
         DLog(@"commit appObj.name = %@, action = %@, code = %@", commitObj.businame, commitObj.actiontype, commitObj.busicode);
+//        for (AppObject * in <#collection#>) {
+//            <#statements#>
+//        }
     }
     
     NSMutableArray *addOrDeleteAppArray = [NSMutableArray array];

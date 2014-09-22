@@ -29,8 +29,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.baidu.com"]]];
+    
+    if ( ! self.urlString) {
+        self.urlString = @"http://www.baidu.com";
+    }
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.urlString]]];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    
+    
 }
 
 - (void)didReceiveMemoryWarning

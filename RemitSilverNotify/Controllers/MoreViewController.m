@@ -11,6 +11,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "ImageCropController.h"
+#import "ScanViewController.h"
 
 @interface MoreViewController ()<ImageCropDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
 
@@ -51,8 +52,13 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     if ([RunTimeData sharedData].hasLogin) {
         [self.userNameButton setTitle:[RunTimeData sharedData].userInfoObj.userName forState:UIControlStateNormal];
+
+        NSString *base64String = [RunTimeData sharedData].userInfoObj.picBase64;
+        NSData *imageData = [[NSData alloc] initWithBase64EncodedString:base64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        self.headImageView.image = [UIImage imageWithData:imageData];
     }
 }
 
@@ -94,6 +100,11 @@
 #pragma mark - Head image
 - (void)editHeadImage
 {
+    if ( ! [RunTimeData sharedData].hasLogin) {
+        [self.view makeToast:@"您还未登陆, 请先登陆"];
+        return;
+    }
+    
     UIActionSheet *choiceSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
                                                     cancelButtonTitle:@"取消"
@@ -149,8 +160,9 @@
     ImageCropController *imgEditorVC = [[ImageCropController alloc] initWithImage:portraitImg cropFrame:CGRectMake(0, SCREEN_HEIGHT/2 - SCREEN_WIDTH/2, SCREEN_WIDTH, SCREEN_WIDTH) limitScaleRatio:3.0];
     imgEditorVC.delegate = self;
     [self customPresentAnimation];
+    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:imgEditorVC];
     
-    [self.view.window.rootViewController presentViewController:imgEditorVC animated:NO completion:nil];
+    [self.view.window.rootViewController presentViewController:navi animated:NO completion:nil];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -180,16 +192,19 @@
 #pragma mark - ImageCrop delegate
 - (void)imageCropDidCancel:(ImageCropController *)cropController
 {
-    [cropController dismissViewControllerAnimated:YES completion:nil];
+
 }
 
 - (void)imageCrop:(ImageCropController *)cropController didFinished:(UIImage *)editedImage
 {
-    self.headImageView.image = editedImage;
-    [cropController dismissViewControllerAnimated:YES completion:nil];
+//    self.headImageView.image = editedImage;
+    NSData *imageData = UIImageJPEGRepresentation(editedImage, 0.5);
+    NSString *imageDataString = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    
+    [RunTimeData sharedData].userInfoObj.picBase64 = imageDataString;
 }
 
-#define ORIGINAL_MAX_WIDTH 640.0f
+#define ORIGINAL_MAX_WIDTH SCREEN_WIDTH
 #pragma mark image scale utility
 - (UIImage *)imageByScalingToMaxSize:(UIImage *)sourceImage {
     if (sourceImage.size.width < ORIGINAL_MAX_WIDTH) return sourceImage;
@@ -332,7 +347,47 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    DLog(@"...");
+    
+    switch (indexPath.row) {
+        case 0: //扫一扫
+        {
+            ScanViewController *scanController = [[ScanViewController alloc] init];
+            
+            CATransition *transition = [CATransition animation];
+            transition.duration = 0.3;
+            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            transition.type = kCATransitionPush;
+            transition.subtype = kCATransitionFromRight;
+            [self.view.window.layer addAnimation:transition forKey:nil];
+            
+            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:scanController];
+            [self.view.window.rootViewController presentViewController:navi animated:NO completion:nil];
+        }
+            break;
+        case 1: //智能名片
+        {
+            
+        }
+            break;
+        case 2: //备付金
+        {
+            
+        }
+            break;
+        case 3: //安全中心
+        {
+            
+        }
+            break;
+        case 4: //关于我们
+        {
+            
+        }
+            break;
+        default:
+            break;
+    }
+    
 }
 
 @end

@@ -13,7 +13,6 @@
 @property (weak, nonatomic) IBOutlet UIImageView *thumbImageView;
 @property (weak, nonatomic) IBOutlet UILabel *sortLabel;
 @property (weak, nonatomic) IBOutlet UIButton *selectButton;
-@property (weak, nonatomic) IBOutlet UIImageView *lineImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *checkMarkImageView;
 
 @property (nonatomic, strong) AppObject *appObj;

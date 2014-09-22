@@ -20,7 +20,9 @@
         self.businame = dict[@"businame"];
         self.linksrc = dict[@"linksrc"];
         self.picsrc = dict[@"picsrc"];
+        self.actiontype = kAddAction;
     }
+    
     return self;
 }
 

@@ -6,7 +6,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MoreViewController">
             <connections>
-                <outlet property="headImageView" destination="aw5-FH-Q47" id="eVF-wH-AW3"/>
+                <outlet property="headImageView" destination="aw5-FH-Q47" id="fbb-Od-J2L"/>
                 <outlet property="tableView" destination="Jr8-hH-2TM" id="g0w-jK-xT7"/>
                 <outlet property="userNameButton" destination="MdF-Ba-6Ee" id="8ZS-kK-6b0"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -39,7 +39,7 @@
                     <rect key="frame" x="0.0" y="64" width="320" height="140"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Icon120.png" translatesAutoresizingMaskIntoConstraints="NO" id="aw5-FH-Q47">
+                        <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Icon120.png" translatesAutoresizingMaskIntoConstraints="NO" id="aw5-FH-Q47">
                             <rect key="frame" x="112" y="0.0" width="96" height="96"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </imageView>
