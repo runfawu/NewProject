@@ -13,4 +13,43 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
+    #import "Constants.h"
+    #import "UIView+Toast.h"
+    #import "Utility.h"
+    #import "MBProgressHUD.h"
+    #import "HttpRequest.h"
+    #import "RunTimeData.h"
 #endif
+
+
+#ifdef DEBUG
+#define DLog(format, ...)      NSLog(format, ##__VA_ARGS__)
+#else
+#define DLog(format, ...)      /*  */
+#endif
+
+#define HOST_URL        @"http://120.236.138.221:8080/inpay_mbphone"
+
+#define SCREEN_HEIGHT  [[UIScreen mainScreen] bounds].size.height
+#define SCREEN_WIDTH   [[UIScreen mainScreen] bounds].size.width
+#define USER_DEFAULT    [NSUserDefaults standardUserDefaults]
+
+#define iPhone5  ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(640, 1136), [[UIScreen mainScreen] currentMode].size) : NO)
+
+#define iPhone4  SCREEN_HEIGHT == 480 ? YES : NO
+#define NAVI_HEIGHT             64
+#define TABBAR_HEIGHT           49
+
+#define UIRGBMAKE(r,g,b)  [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1]
+
+#define IS_OK(dict)   [dict[@"retcode"] isEqualToString:@"0"]
+#define SHOW_ERROR_MESSAGE_TOAST(view)  [view makeToast:result[@"retmsg"]]
+#define SHOW_BAD_NET_TOAST(view)        [view makeToast:@"网络不给力,服务器无响应"]
+#define DEBUG_RETAIN_COUNT(_instance)  CFGetRetainCount((__bridge CFTypeRef)_instance)
+#define CHECK_NETWORK_AND_SHOW_TOAST(view)    if ( ! [Utility isNetworkReachable]) { \
+                                                  [view makeToast:@"当前网络不可用,请检查网络连接."]; \
+                                                  return; \
+                                              }
+
+#define ON_DEVELOPING_STATE     [self.view makeToast:@"功能开发中,敬请期待"]
+
