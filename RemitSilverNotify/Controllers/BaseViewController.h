@@ -10,7 +10,7 @@
 
 @interface BaseViewController : UIViewController
 
-@property (nonatomic) BOOL showNavi;
+//@property (nonatomic) BOOL showNavi;
 @property (nonatomic) BOOL enableBack;
 @property (nonatomic) BOOL showBgImage;
 

@@ -31,10 +31,8 @@
     if (self.showBgImage) {
         [self createBgImageView];
     }
-    if (self.showNavi) {
-        [self configNavigationBar];
-    }
-    }
+    [self configNavigationBar];
+}
 
 - (void)createBgImageView
 {

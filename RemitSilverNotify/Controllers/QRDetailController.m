@@ -8,7 +8,7 @@
 
 #import "QRDetailController.h"
 
-@interface QRDetailController ()
+@interface QRDetailController ()<UIWebViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 
@@ -20,6 +20,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
+//        self.showNavi = YES;
         self.enableBack = YES;
         self.title = @"二维码详情";
     }
@@ -29,7 +30,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.URLString]]];
+    [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+    
 }
 
 - (void)viewDidLayoutSubviews
@@ -43,6 +47,18 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - WebView delegate
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    
+    return YES;
 }
 
 @end

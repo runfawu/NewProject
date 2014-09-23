@@ -33,7 +33,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.showNavi = YES;
+//        self.showNavi = YES;
         self.enableBack = YES;
     }
     return self;

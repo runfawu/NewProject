@@ -12,6 +12,8 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "ImageCropController.h"
 #import "ScanViewController.h"
+#import "LoginController.h"
+#import "SafetyViewController.h"
 
 @interface MoreViewController ()<ImageCropDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
 
@@ -112,6 +114,18 @@
                                                     otherButtonTitles:@"拍照", @"从相册中选取", nil];
     [choiceSheet showInView:self.view.window.rootViewController.view];
 }
+
+- (IBAction)clickLogin:(UIButton *)sender {
+    
+    BOOL hasLogin = [RunTimeData sharedData].hasLogin;
+    if ( ! hasLogin) {
+        LoginController *loginController = [[LoginController alloc] initWithNibName:@"LoginController" bundle:nil];
+        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginController];
+        
+        [self.view.window.rootViewController presentViewController:navi animated:YES completion:nil];
+    }
+}
+
 
 #pragma mark - UIActionSheet delegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -372,11 +386,22 @@
         case 2: //备付金
         {
             
+            
         }
             break;
         case 3: //安全中心
         {
+            SafetyViewController *safetyController = [[SafetyViewController alloc] initWithNibName:@"SafetyViewController" bundle:nil];
             
+            CATransition *transition = [CATransition animation];
+            transition.duration = 0.3;
+            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            transition.type = kCATransitionPush;
+            transition.subtype = kCATransitionFromRight;
+            [self.view.window.layer addAnimation:transition forKey:nil];
+            
+            UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:safetyController];
+            [self.view.window.rootViewController presentViewController:navi animated:NO completion:nil];
         }
             break;
         case 4: //关于我们

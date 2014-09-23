@@ -10,4 +10,6 @@
 
 @interface QRDetailController : BaseViewController
 
+@property (nonatomic, strong) NSString *URLString;
+
 @end
