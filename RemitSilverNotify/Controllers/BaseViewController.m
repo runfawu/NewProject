@@ -32,6 +32,10 @@
         [self createBgImageView];
     }
     [self configNavigationBar];
+    
+    if (self.showRightBarButtonItem) {
+        [self configRightBarButtonItem];
+    }
 }
 
 - (void)createBgImageView
@@ -40,6 +44,20 @@
     bgImageView.image = [UIImage imageNamed:@"main_bg"];
     [self.view addSubview:bgImageView];
     [self.view sendSubviewToBack:bgImageView];
+}
+
+- (void)configRightBarButtonItem
+{
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    rightButton.frame = CGRectMake(18, 0, 45, 26);
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"main_confim_n"] forState:UIControlStateNormal];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"main_confim_h"] forState:UIControlStateHighlighted];
+    [rightButton setTitle:@"确定" forState:UIControlStateNormal];
+    rightButton.titleLabel.font = [UIFont systemFontOfSize:15];
+    [rightButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(clickRightBarButtonItem:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
 }
 
 - (void)configNavigationBar
@@ -71,6 +89,11 @@
 - (void)clickBack:(id)sender
 {
     DLog(@"base controller click back");
+}
+
+- (void)clickRightBarButtonItem:(id)sender
+{
+    DLog(@"base controller click rightBarButtonItem");
 }
 
 @end

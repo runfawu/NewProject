@@ -264,21 +264,21 @@ static const int gridHeight = 80;
     NSDictionary *resultDict = result;
     if (IS_OK(resultDict)) {
         NSArray *dataArray = resultDict[@"defaultapps"];
-        for (NSDictionary *dict in dataArray) {
-            AppObject *object = [[AppObject alloc] initWithDict:dict];
-            [self.defaultAppArray addObject:object];
+        if ( ! [dataArray isKindOfClass:[NSNull class]]) {
+            for (NSDictionary *dict in dataArray) {
+                AppObject *object = [[AppObject alloc] initWithDict:dict];
+                [self.defaultAppArray addObject:object];
+            }
+            
         }
-        
         [self.appArray addObjectsFromArray:self.defaultAppArray];
         [self addTheAddAppButton];
-        
         [self.appTableView reloadData];
         
     } else {
         SHOW_ERROR_MESSAGE_TOAST(self.appTableView);
     }
 }
-
 
 - (void)parseDataOfPersonalApp:(id)result
 {

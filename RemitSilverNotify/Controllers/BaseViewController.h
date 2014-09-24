@@ -13,7 +13,9 @@
 //@property (nonatomic) BOOL showNavi;
 @property (nonatomic) BOOL enableBack;
 @property (nonatomic) BOOL showBgImage;
+@property (nonatomic) BOOL showRightBarButtonItem;
 
 - (void)clickBack:(id)sender;
+- (void)clickRightBarButtonItem:(id)sender;
 
 @end

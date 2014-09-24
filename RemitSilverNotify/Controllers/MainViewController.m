@@ -119,6 +119,9 @@
     
     self.moreController = [[MoreViewController alloc] initWithNibName:@"MoreViewController" bundle:nil];
     self.moreController.view.frame = CGRectMake(4 * width, 0, width, height);
+    if (iPhone4) {
+        self.moreController.view.frame = CGRectMake(4 * width, 0, width, height + 88);
+    }
     
     [self.mainScrollView addSubview:self.newsController.view];
     [self.mainScrollView addSubview:self.appsController.view];

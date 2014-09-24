@@ -7,6 +7,8 @@
 //
 
 #import "SafetyViewController.h"
+#import "ResestLoginPwdController.h"
+#import "QRDetailController.h"
 
 @interface SafetyViewController ()
 
@@ -29,7 +31,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+
+    [self setup];
 }
 
 - (void)didReceiveMemoryWarning
@@ -38,27 +41,39 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)setup
+{
+    self.view.backgroundColor = UIRGBMAKE(239, 247, 246);
+   
+
+}
+
 #pragma mark - Button events
-- (IBAction)buttonClicked:(UIButton *)sender {
-    switch (sender.tag) {
-        case 720: //手势密码锁定
-        {
-            
-        }
-            break;
-        case 721: //修改登陆密码
-        {
-            
-        }
-            break;
-        case 722: //修改备付金密码
-        {
-            
-        }
-            break;
-        default:
-            break;
-    }
+- (IBAction)gestureLockButtonClicked:(UIButton *)sender {
+    
+    
+}
+
+- (IBAction)setSecretButtonClicked:(id)sender {
+}
+
+- (IBAction)fillInIdentifyButtonClicked:(id)sender {
+}
+
+- (IBAction)resetLoginPassword:(id)sender {
+    ResestLoginPwdController *loginPwdController = [[ResestLoginPwdController alloc] initWithNibName:@"ResestLoginPwdController" bundle:nil];
+    
+    [self.navigationController pushViewController:loginPwdController animated:YES];
+}
+
+//找回备付金密码
+- (IBAction)resetPaymentPassword:(id)sender {
+    QRDetailController *webViewController = [[QRDetailController alloc] initWithNibName:@"QRDetailController" bundle:nil];
+    //http://ip:port:/inpay_mbphone/page/getPage.do?data={pbusicode=100005}
+    webViewController.URLString = [NSString stringWithFormat:@"%@/page/getPage.do?data={pbusicode=100005}", HOST_URL];
+    webViewController.title = @"修改备付金密码";
+    
+    [self.navigationController pushViewController:webViewController animated:YES];
 }
 
 
@@ -74,5 +89,7 @@
     
     [self dismissViewControllerAnimated:NO completion:nil];
 }
+
+
 
 @end

@@ -20,9 +20,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-//        self.showNavi = YES;
         self.enableBack = YES;
-        self.title = @"二维码详情";
     }
     return self;
 }
@@ -30,7 +28,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    self.URLString = [self.URLString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];;
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.URLString]]];
     [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     
@@ -59,6 +57,11 @@
 {
     
     return YES;
+}
+
+- (void)clickBack:(id)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

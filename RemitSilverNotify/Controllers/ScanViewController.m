@@ -170,12 +170,9 @@
     DLog(@"二维码为：%@",stringValue);
     
     if ([stringValue hasPrefix:@"http://"]) {
-//        AppWebController *webController = [[AppWebController alloc] initWithNibName:@"AppWebController" bundle:nil];
-//        webController.urlString = stringValue;
-//        
-//        [self.navigationController pushViewController:webController animated:YES];
         QRDetailController *detailController = [[QRDetailController alloc] initWithNibName:@"QRDetailController" bundle:nil];
         detailController.URLString = stringValue;
+        detailController.title = @"二维码详情";
         
         [self.navigationController pushViewController:detailController animated:YES];
     }
