@@ -11,7 +11,6 @@
 
 @interface RunTimeData : NSObject
 
-//@property (nonatomic, strong) NSMutableArray *userInfoArray;
 @property (nonatomic, strong) UserInfoObject *userInfoObj;
 @property (nonatomic, assign) BOOL hasLogin;
 

@@ -19,7 +19,7 @@
 #import "LoginController.h"
 #import "RunTimeData.h"
 
-@interface MainViewController ()<UIScrollViewDelegate>
+@interface MainViewController ()<UIScrollViewDelegate, WelComeControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIScrollView *mainScrollView;
 @property (weak, nonatomic) IBOutlet UIImageView *tabbarImageView;
@@ -135,6 +135,7 @@
     self.lastIndex = 2;
     self.homeButton.selected = YES;
     self.mainScrollView.contentOffset = CGPointMake(2 * CGRectGetWidth(self.mainScrollView.frame), 0);
+    self.mainScrollView.bounces = NO;
     
     [self.newsButton setImage:[UIImage imageNamed:@"tabbar_profile_sel"] forState:UIControlStateHighlighted | UIControlStateSelected];
     [self.appsButton setImage:[UIImage imageNamed:@"tabbar_apps_sel"] forState:UIControlStateHighlighted | UIControlStateSelected];
@@ -176,8 +177,7 @@
             break;
         case 103:
         {
-            BOOL hasLogin = [RunTimeData sharedData].hasLogin;
-            if ( ! hasLogin) {
+            if ( ! [RunTimeData sharedData].hasLogin) {
                 LoginController *loginController = [[LoginController alloc] initWithNibName:@"LoginController" bundle:nil];
                 UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginController];
                 __weak typeof(self) weakSelf = self;
@@ -247,7 +247,14 @@
 #pragma mark - Present welcomePage
 - (void)presentLogin
 {
-    
+    LoginController *loginController = [[LoginController alloc] initWithNibName:@"LoginController" bundle:nil];
+    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginController];
+//    __weak typeof(self) weakSelf = self;
+//    loginController.loginBlock = ^ (int index){
+//        [weakSelf.mainScrollView setContentOffset:CGPointMake(index * self.mainScrollView.frame.size.width, 0) animated:YES];
+//        [weakSelf changeButtonImageState:index];
+//    };
+    [self.view.window.rootViewController presentViewController:navi animated:NO completion:nil];
 }
 
 - (void)hideTabbarView
@@ -263,6 +270,8 @@
 - (void)presentWelcomePage
 {
     WelComeController *welcomeController = [[WelComeController alloc] initWithNibName:@"WelComeController" bundle:nil];
+    welcomeController.delegate = self;
+    
     CATransition *transition = [CATransition animation];
     transition.duration = 0.3;
     transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
@@ -271,6 +280,13 @@
     [self.view.window.layer addAnimation:transition forKey:nil];
     
     [self presentViewController:welcomeController animated:NO completion:nil];
+}
+
+- (void)welcomControllerShouldEnterMainPage:(WelComeController *)wecomeController
+{
+    if ( ! [RunTimeData sharedData].hasLogin) {
+        [self presentLogin];
+    }
 }
 
 @end

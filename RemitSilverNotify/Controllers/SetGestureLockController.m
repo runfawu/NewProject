@@ -12,6 +12,7 @@
 @interface SetGestureLockController ()
 @property (weak, nonatomic) IBOutlet UISwitch *gestureSwitch;
 @property (weak, nonatomic) IBOutlet UIView *setLockView;
+@property (weak, nonatomic) IBOutlet UILabel *setStateLabel;
 
 @end
 
@@ -37,7 +38,8 @@
 {
     [super viewWillAppear:animated];
     
-    NSString *gesturePassword = [USER_DEFAULT objectForKey:kGesturePassword];
+    NSDictionary *accountDict = [USER_DEFAULT objectForKey:ACCOUNT_INFO];
+    NSString *gesturePassword = accountDict[kGesturePassword];
     if (gesturePassword) {
         self.gestureSwitch.on = YES;
         self.setLockView.alpha = 1;
@@ -51,6 +53,11 @@
 
 - (IBAction)gestureSwitchValueChanged:(UISwitch *)sender {
     if (sender.on) {
+        NSDictionary *accountDict = [USER_DEFAULT objectForKey:ACCOUNT_INFO];
+        NSString *gesturePassword = accountDict[kGesturePassword];
+        if ( ! gesturePassword) {
+            self.setStateLabel.text = @"设置手势密码";
+        }
         [UIView animateWithDuration:0.25 animations:^{
             self.setLockView.alpha = 1;
         }];
@@ -69,8 +76,7 @@
 
 - (IBAction)setLockButtonClicked:(id)sender {
     GestureLockController *gestureController = [[GestureLockController alloc] initWithNibName:@"GestureLockController" bundle:nil];
-    gestureController.isFromAppDelegate = NO;
-//    [USER_DEFAULT removeObjectForKey:kHasSetGesturePassword];
+
     [self.navigationController pushViewController:gestureController animated:YES];
     
 }

@@ -13,6 +13,7 @@
 #import "AppGridView.h"
 #import "UIButton+WebCache.h"
 #import "RetryView.h"
+#import "AppWebController.h"
 
 @interface ApplicationsController ()<UITableViewDataSource, UITableViewDelegate>
 
@@ -20,7 +21,6 @@
 @property (nonatomic, strong) NSMutableArray *sortAppArray;
 @property (nonatomic, strong) HttpRequest *sortAppRequest;
 @property (nonatomic, strong) RetryView *retryView;
-@property (nonatomic, strong) NSIndexPath *lastIndexPath;
 
 @end
 
@@ -80,7 +80,7 @@
 - (void)requestDataOfSortApp
 {
     CHECK_NETWORK_AND_SHOW_TOAST(self.view);
-    
+    DLog(@"333333333333333333");
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     NSString *url = [NSString stringWithFormat:@"%@/app/getAllApps.do", HOST_URL]; // /app/getAllApp.do
@@ -221,14 +221,6 @@ static const int gridHeight = 80;
     [indexPathsArray addObject:insertIndexPath];
     DLog(@"...");
     if (indexPath.row == 0) {
-//        if (self.lastIndexPath) {
-//            NSMutableArray* indexPathsArray = [NSMutableArray array];
-//            NSIndexPath* insertIndexPath = [NSIndexPath indexPathForRow:1 inSection:self.lastIndexPath.section];
-//            [indexPathsArray addObject:insertIndexPath];
-//            [self.tableView beginUpdates];
-//            [self.tableView deleteRowsAtIndexPaths:indexPathsArray withRowAnimation:UITableViewRowAnimationTop];
-//            [self.tableView endUpdates];
-//        }
         if ( ! sortObj.shouldOpen) {
             sortObj.shouldOpen = YES;
             [titleCell changeArrowWithUp:NO];
@@ -237,7 +229,6 @@ static const int gridHeight = 80;
             [self.tableView insertRowsAtIndexPaths:indexPathsArray withRowAnimation:UITableViewRowAnimationTop];
             [self.tableView endUpdates];
             [self.tableView scrollToNearestSelectedRowAtScrollPosition:UITableViewScrollPositionMiddle animated:YES];
-//            self.lastIndexPath = indexPath;
         } else {
             sortObj.shouldOpen = NO;
             [titleCell changeArrowWithUp:YES];
@@ -272,7 +263,19 @@ static const int gridHeight = 80;
     
     AppObject *appObj = sortObj.appArray[index];
     DLog(@"点的第%d个section, 第%d个app, name = %@", (int)indexPath.section, (int)index, (NSString *)appObj.businame);
-    ON_DEVELOPING_STATE;
+    
+    AppWebController *webController = [[AppWebController alloc] initWithNibName:@"AppWebController" bundle:nil];
+    webController.urlString = appObj.linksrc;
+    
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.3;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionPush;
+    transition.subtype = kCATransitionFromRight;
+    [self.view.window.layer addAnimation:transition forKey:nil];
+    
+    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:webController];
+    [self.view.window.rootViewController presentViewController:navi animated:NO completion:nil];
 }
 
 

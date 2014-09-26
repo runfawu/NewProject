@@ -8,6 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+@class WelComeController;
+@protocol WelComeControllerDelegate <NSObject>
+
+- (void)welcomControllerShouldEnterMainPage:(WelComeController *)wecomeController;
+
+@end
+
 @interface WelComeController : UIViewController
+
+@property (nonatomic, weak) id<WelComeControllerDelegate> delegate;
 
 @end

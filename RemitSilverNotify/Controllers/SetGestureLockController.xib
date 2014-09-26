@@ -8,6 +8,7 @@
             <connections>
                 <outlet property="gestureSwitch" destination="sP2-MY-fol" id="40K-W8-1fw"/>
                 <outlet property="setLockView" destination="dBS-q4-SIZ" id="Idz-N8-qqM"/>
+                <outlet property="setStateLabel" destination="ssH-fS-PmO" id="966-y0-wG9"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>

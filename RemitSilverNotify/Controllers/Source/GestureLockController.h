@@ -11,6 +11,4 @@
 
 @interface GestureLockController : BaseViewController
 
-@property (nonatomic, assign) BOOL isFromAppDelegate;
-
 @end

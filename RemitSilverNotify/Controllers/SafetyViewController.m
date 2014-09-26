@@ -40,7 +40,8 @@
 {
     [super viewWillAppear:animated];
     
-    NSString *gesturePassword = [USER_DEFAULT objectForKey:kGesturePassword];
+    NSDictionary *accountDict = [USER_DEFAULT objectForKey:ACCOUNT_INFO];
+    NSString *gesturePassword = accountDict[kGesturePassword];
     if (gesturePassword) {
         self.statusLabel.text = @"开启";
     }

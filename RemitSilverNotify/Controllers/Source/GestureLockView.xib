@@ -15,26 +15,29 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 </imageView>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="dot_off.png" translatesAutoresizingMaskIntoConstraints="NO" id="zMP-8e-RhB">
-                    <rect key="frame" x="115" y="25" width="90" height="90"/>
+                    <rect key="frame" x="115" y="30" width="96" height="96"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" red="1" green="0.19588766299999999" blue="0.31067910580000002" alpha="1" colorSpace="calibratedRGB"/>
                 </imageView>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="绘制解锁图案" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f6p-Rt-rpc">
-                    <rect key="frame" x="20" y="115" width="280" height="20"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="请输入手势密码" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f6p-Rt-rpc">
+                    <rect key="frame" x="20" y="136" width="280" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WdG-hO-Xah">
-                    <rect key="frame" x="95" y="456" width="130" height="30"/>
+                    <rect key="frame" x="95" y="420" width="130" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <state key="normal" title="忘记手势密码？">
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
+                    <connections>
+                        <action selector="forgetGesturePassword:" destination="iN0-l3-epB" eventType="touchUpInside" id="rhK-LA-IKp"/>
+                    </connections>
                 </button>
                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4DX-Ae-EkI" customClass="KKGestureLockView">
-                    <rect key="frame" x="0.0" y="140" width="320" height="303"/>
+                    <rect key="frame" x="20" y="164" width="280" height="280"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
@@ -46,11 +49,12 @@
                 <outlet property="forgetButton" destination="WdG-hO-Xah" id="NLR-Ia-qU8"/>
                 <outlet property="lockView" destination="4DX-Ae-EkI" id="mDf-fr-5Zn"/>
                 <outlet property="portraitImageView" destination="zMP-8e-RhB" id="hKi-4q-ryg"/>
+                <outlet property="stateLabel" destination="f6p-Rt-rpc" id="qem-TO-941"/>
             </connections>
         </view>
     </objects>
     <resources>
-        <image name="dot_off.png" width="65" height="65"/>
+        <image name="dot_off.png" width="80" height="80"/>
         <image name="gestureLock_bg.png" width="640" height="1136"/>
     </resources>
 </document>

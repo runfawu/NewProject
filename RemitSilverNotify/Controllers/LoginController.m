@@ -193,7 +193,7 @@
         NSString *userId = resultDict[@"userid"];
         NSString *barCode = resultDict[@"barcode"];
         NSString *headPhotoURL = resultDict[@"headPhotoUrl"];
-        DLog(@"userName = %@, id = %@, sex = %@, picBase64 = %@, token = %@, barCode = %@, headPhotoURL = %@", userName, userId, sex, picBase64, token, barCode, headPhotoURL);
+//        DLog(@"userName = %@, id = %@, sex = %@, picBase64 = %@, token = %@, barCode = %@, headPhotoURL = %@", userName, userId, sex, picBase64, token, barCode, headPhotoURL);
         
         UserInfoObject *userInfo = [[UserInfoObject alloc] init];
         userInfo.sex = sex;
@@ -205,16 +205,21 @@
         userInfo.headPhotoURL = headPhotoURL;
     
         RunTimeData *userModel = [RunTimeData sharedData];
-        userModel.userInfoObj = userInfo;
         userModel.hasLogin = YES;
-        [USER_DEFAULT setBool:YES forKey:kDidAddOrDeleteAppNotification];
+        userModel.userInfoObj = userInfo;
+        [userModel saveData];
+    
+        NSMutableDictionary *accountDict = [NSMutableDictionary dictionary];
+        [accountDict setObject:self.userNameTextField.text forKey:kUserName];
+        [accountDict setObject:self.passwordTextField.text forKey:kPassword];
+        [USER_DEFAULT setObject:accountDict forKey:ACCOUNT_INFO];
         [USER_DEFAULT synchronize];
         
         if (self.loginBlock) {
             self.loginBlock(3);
         }
         
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self dismissViewControllerAnimated:YES completion:nil];
     } else {
         SHOW_ERROR_MESSAGE_TOAST(self.view);
     }

@@ -17,6 +17,11 @@
 
 @implementation WelComeController
 
+- (void)dealloc
+{
+    DLog(@"WelComeController dealloc");
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -89,7 +94,13 @@ static const int welcomeImageCount = 3;
     transition.subtype = kCATransitionFromRight;
     [self.view.window.layer addAnimation:transition forKey:nil];
     
-    [self dismissViewControllerAnimated:NO completion:nil];
+    __weak typeof(&*self) weakSelf = self;
+    [self dismissViewControllerAnimated:NO completion:^{
+        if ([weakSelf.delegate respondsToSelector:@selector(welcomControllerShouldEnterMainPage:)]) {
+            [weakSelf.delegate welcomControllerShouldEnterMainPage:weakSelf];
+        }
+    }];
+    
 }
 
 - (void)didReceiveMemoryWarning

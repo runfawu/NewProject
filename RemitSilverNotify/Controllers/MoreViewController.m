@@ -28,13 +28,28 @@
 
 @implementation MoreViewController
 
+#pragma mark - Lifecycle
+- (void)dealloc
+{
+    DLog(@".............");
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kGestureLockLoginDidSuccessNotification object:nil];
+}
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePortraitAndUserName) name:kGestureLockLoginDidSuccessNotification object:nil];
     }
     return self;
+}
+
+- (void)updatePortraitAndUserName
+{
+    [self.userNameButton setTitle:[RunTimeData sharedData].userInfoObj.userName forState:UIControlStateNormal];
+    
+    NSString *base64String = [RunTimeData sharedData].userInfoObj.picBase64;
+    NSData *imageData = [[NSData alloc] initWithBase64EncodedString:base64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    self.headImageView.image = [UIImage imageWithData:imageData];
 }
 
 - (void)viewDidLoad
@@ -56,25 +71,21 @@
     [super viewWillAppear:animated];
     
     if ([RunTimeData sharedData].hasLogin) {
-        [self.userNameButton setTitle:[RunTimeData sharedData].userInfoObj.userName forState:UIControlStateNormal];
-
-        NSString *base64String = [RunTimeData sharedData].userInfoObj.picBase64;
-        NSData *imageData = [[NSData alloc] initWithBase64EncodedString:base64String options:NSDataBase64DecodingIgnoreUnknownCharacters];
-        self.headImageView.image = [UIImage imageWithData:imageData];
+        [self updatePortraitAndUserName];
     }
 }
 
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    DLog(@"1111 more frame = %@", NSStringFromCGRect(self.view.frame));
+
     self.tableView.frame = CGRectMake(0, 204, SCREEN_WIDTH, SCREEN_HEIGHT - 204 - TABBAR_HEIGHT - 3);
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    DLog(@"more frame = %@", NSStringFromCGRect(self.view.frame));
+
 }
 
 #pragma mark - Private methods
@@ -89,13 +100,6 @@
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerNib:[UINib nibWithNibName:@"MoreTableCell" bundle:nil] forCellReuseIdentifier:@"MoreTableCell"];
-//    [self.view bringSubviewToFront:self.tableView];
-//    if (iPhone4) {
-//        CGRect frame = self.view.frame;
-//        frame.size.height += 88;
-//        self.view.frame = frame;
-//    }
-    DLog(@"00000 more frame = %@", NSStringFromCGRect(self.view.frame));
 }
 
 - (void)configHeadImageView
@@ -116,7 +120,7 @@
 - (void)editHeadImage
 {
     if ( ! [RunTimeData sharedData].hasLogin) {
-        [self.view makeToast:@"您还未登陆, 请先登陆"];
+        [self.tableView makeToast:@"您还未登陆, 请先登陆"];
         return;
     }
     
@@ -129,9 +133,7 @@
 }
 
 - (IBAction)clickLogin:(UIButton *)sender {
-    
-    BOOL hasLogin = [RunTimeData sharedData].hasLogin;
-    if ( ! hasLogin) {
+    if ( ! [RunTimeData sharedData].hasLogin) {
         LoginController *loginController = [[LoginController alloc] initWithNibName:@"LoginController" bundle:nil];
         UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginController];
         
@@ -404,6 +406,10 @@
             break;
         case 3: //安全中心
         {
+            if ( ! [RunTimeData sharedData].hasLogin) {
+                [self.tableView makeToast:@"您还未登陆，请先登陆"];
+                return;
+            }
             SafetyViewController *safetyController = [[SafetyViewController alloc] initWithNibName:@"SafetyViewController" bundle:nil];
             
             CATransition *transition = [CATransition animation];

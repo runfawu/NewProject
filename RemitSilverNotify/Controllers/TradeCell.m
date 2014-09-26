@@ -50,8 +50,11 @@
     self.tradeTime.text = [NSString stringWithFormat:@"%@-%@-%@ %@:%@:%@", year, month, day, hour, minute, second];
     if ([_tradeObj.statusname isEqualToString:@"等待付款"]) {
         self.statusnameButton.backgroundColor = [UIColor redColor];
+        self.statusnameButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     } else {
         self.statusnameButton.backgroundColor = [UIColor clearColor];
+        self.statusnameButton.titleLabel.font = [UIFont systemFontOfSize:13];
+        [self.statusnameButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     }
     [self.statusnameButton setTitle:_tradeObj.statusname forState:UIControlStateNormal];
     

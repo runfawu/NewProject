@@ -54,15 +54,22 @@ static const int gridHeight = 80;
 - (void)dealloc
 {
     DLog(@".............");
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kGestureLockLoginDidSuccessNotification object:nil];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePersonalApp) name:kGestureLockLoginDidSuccessNotification object:nil];
     }
     return self;
+}
+
+- (void)updatePersonalApp
+{
+    [self.loginButton setTitle:[RunTimeData sharedData].userInfoObj.userId forState:UIControlStateNormal];
+    [self requestDataOfPersonalApps];
 }
 
 - (void)viewDidLoad
@@ -85,12 +92,8 @@ static const int gridHeight = 80;
 {
     [super viewWillAppear:animated];
 
-    BOOL needUpdateApp = [USER_DEFAULT boolForKey:kDidAddOrDeleteAppNotification];
-    if (needUpdateApp && [RunTimeData sharedData].hasLogin) {
-        [self.loginButton setTitle:[RunTimeData sharedData].userInfoObj.userId forState:UIControlStateNormal];
-        [self requestDataOfPersonalApps];
-        [USER_DEFAULT removeObjectForKey:kDidAddOrDeleteAppNotification];
-        [USER_DEFAULT synchronize];
+    if ([RunTimeData sharedData].hasLogin) {
+        [self updatePersonalApp];
     }
 }
 
@@ -209,6 +212,7 @@ static const int gridHeight = 80;
 {
     CHECK_NETWORK_AND_SHOW_TOAST(self.view);
     
+    DLog(@"1111111111111111");
     [MBProgressHUD showHUDAddedTo:self.appTableView animated:YES];
     
     NSString *url = [NSString stringWithFormat:@"%@/app/getDefaultApps.do", HOST_URL];
@@ -217,7 +221,7 @@ static const int gridHeight = 80;
     
     self.defaultAppRequest = [[HttpRequest alloc] init];
     [self.defaultAppRequest postRequestWithURLString:url params:nil successBlock:^(id result) {
-        DLog(@"default app result = %@", result);
+        DLog(@"默认应用列表 = %@", result);
         weakSelf.defaultAppRequest = nil;
         [weakSelf parseDataOfDefaultApp:result];
         [MBProgressHUD hideHUDForView:weakSelf.appTableView animated:YES];
@@ -231,7 +235,8 @@ static const int gridHeight = 80;
 
 - (void)requestDataOfPersonalApps
 {
-    DLog(@"。。。。。。。。。。。。。。。。。。。。。。。。。。。");
+    DLog(@"22222222222222");
+    CHECK_NETWORK_AND_SHOW_TOAST(self.view);
     [MBProgressHUD showHUDAddedTo:self.appTableView animated:YES];
     
     UserInfoObject *userObj = [RunTimeData sharedData].userInfoObj;
@@ -291,7 +296,7 @@ static const int gridHeight = 80;
         if ( ! [dataArray isKindOfClass:[NSNull class]] && dataArray.count > 0) {
             for (NSDictionary *dict in dataArray) {
                 AppObject *object = [[AppObject alloc] initWithDict:dict];
-                    [self.appArray insertObject:object atIndex:self.appArray.count - 1];
+                [self.appArray insertObject:object atIndex:self.appArray.count - 1];
             }
         }
         [self.appTableView reloadData];
@@ -302,8 +307,7 @@ static const int gridHeight = 80;
 
 #pragma mark - Button event
 - (IBAction)mainpageLogin:(id)sender {
-    BOOL hasLogin = [RunTimeData sharedData].hasLogin;
-    if ( ! hasLogin) {
+    if ( ! [RunTimeData sharedData].hasLogin) {
         LoginController *loginController = [[LoginController alloc] initWithNibName:@"LoginController" bundle:nil];
         UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:loginController];
         
@@ -349,6 +353,7 @@ static const int gridHeight = 80;
         [self.view.window.layer addAnimation:transition forKey:nil];
         
         AppWebController *webController = [[AppWebController alloc] initWithNibName:@"AppWebController" bundle:nil];
+        webController.urlString = appObj.linksrc;
         UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:webController];
         
         [self.view.window.rootViewController presentViewController:navi animated:NO completion:nil];

@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "MainViewController.h"
+#import "GestureLockView.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, GestureLockViewDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (nonatomic, strong) MainViewController *mainController;

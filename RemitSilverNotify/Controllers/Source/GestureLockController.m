@@ -9,17 +9,23 @@
 #import "GestureLockController.h"
 #import "KKGestureLockPreviewView.h"
 
+CGRect autoPositionToIphone4(CGRect rect)
+{
+    CGRect newRect = rect;
+    newRect.origin.y -= 30;
+    
+    return newRect;
+}
+
 @interface GestureLockController ()<KKGestureLockViewDelegate>
 
 @property (weak, nonatomic) IBOutlet KKGestureLockView *lockView;
 @property (weak, nonatomic) IBOutlet KKGestureLockPreviewView *boxView;
-@property (weak, nonatomic) IBOutlet UIImageView *portraitImageView;
-@property (weak, nonatomic) IBOutlet UIButton *forgetGestureButton;
 @property (weak, nonatomic) IBOutlet UILabel *stateLabel;
 
 @property (nonatomic, strong) NSString *firstPassword;
 @property (nonatomic, assign) BOOL hasSet;
-@property (nonatomic, assign) int remainChangeCount;
+
 
 
 
@@ -40,45 +46,33 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    self.remainChangeCount = 5;
-    
     
     self.lockView.normalGestureNodeImage = [UIImage imageNamed:@"dot_off"];
     self.lockView.selectedGestureNodeImage = [UIImage imageNamed:@"dot_on"];
     self.lockView.lineColor = [[UIColor orangeColor] colorWithAlphaComponent:0.3];
     self.lockView.lineWidth = 10;
     self.lockView.delegate = self;
-    self.lockView.contentInsets = UIEdgeInsetsMake(0, 40, 0, 40); //上左下右
 
     self.boxView.userInteractionEnabled = NO;
     self.boxView.normalGestureNodeImage = [UIImage imageNamed:@"one_box"];
     self.boxView.selectedGestureNodeImage = [UIImage imageNamed:@"dot_on"];
-    
-    if (_isFromAppDelegate) {
-        self.portraitImageView.hidden = NO;
-        self.forgetGestureButton.hidden = NO;
-        self.boxView.hidden = YES;
-        self.stateLabel.text = @"请输入手势密码";
-    } else {
-        self.portraitImageView.hidden = YES;
-        self.forgetGestureButton.hidden = YES;
-    }
 }
 
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
     
-    self.lockView.frame = CGRectMake(0, 140, SCREEN_WIDTH, SCREEN_HEIGHT- NAVI_HEIGHT - 140 - 60);
-    self.forgetGestureButton.frame = CGRectMake(SCREEN_WIDTH/2 - 130/2, self.lockView.frame.size.height+self.lockView.frame.origin.y, 130, 30);
+    if (iPhone4) {
+        self.stateLabel.frame = autoPositionToIphone4(self.stateLabel.frame);
+        self.boxView.frame = autoPositionToIphone4(self.boxView.frame);
+        self.lockView.frame = autoPositionToIphone4(self.lockView.frame);
+    }
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    DLog(@"gesture frame = %@", NSStringFromCGRect(self.view.frame));
     
 }
 
@@ -94,52 +88,37 @@
 }
 
 - (void)gestureLockView:(KKGestureLockView *)gestureLockView didEndWithPasscode:(NSString *)passcode{
-    NSLog(@"%@",passcode);
-
+    DLog(@"设置的lockPassCode = %@",passcode);
     
-    NSString *gesturePassword = [USER_DEFAULT objectForKey:kGesturePassword];
-//    BOOL hasSetGesturePassword = [USER_DEFAULT boolForKey:kHasSetGesturePassword];
-    
-    if ( ! _isFromAppDelegate) {
-        if (  _hasSet && [self.firstPassword isEqualToString:passcode]) {
-            [self.view makeToast:@"绘制成功"];
-//            if ( ! hasSetGesturePassword) {
-//                [USER_DEFAULT setBool:YES forKey:kHasSetGesturePassword];
-//            }
-            [USER_DEFAULT setObject:passcode forKey:kGesturePassword];
-            [USER_DEFAULT synchronize];
-            [self performSelector:@selector(clickBack:) withObject:nil afterDelay:0.5];
-        }
-        
-        if ( ! _hasSet) {
-            self.firstPassword = passcode;
-            _hasSet = YES;
-            self.stateLabel.text = @"请再次绘制解锁图案";
-        }
-        
-        if ( _hasSet && ! [self.firstPassword isEqualToString:passcode]) {
-            self.stateLabel.text = @"与上次输入不一致，请重新设置";
-            self.boxView.passcode = nil;
-            _hasSet = NO;
-            return;
-        }
-        
-        self.boxView.passcode = passcode;
-    } else {
-        if (gesturePassword) {
-            if ([gesturePassword isEqualToString:passcode]) {
-                [self dismiss];
-            } else {
-                _remainChangeCount --;
-                self.stateLabel.text = [NSString stringWithFormat:@"密码错误，还可以再输入%d次", _remainChangeCount];
-                self.stateLabel.textColor = [UIColor redColor];
-                if (_remainChangeCount == 0) {
-                    [self.view makeToast:@"没机会了"];
-                }
-            }
-            
-        }
+    if (passcode.length < 7) { //0,1,2,3
+        [self.view makeToast:@"手势密码至少4位，请重新设置"];
+        return;
     }
+    if (  _hasSet && [self.firstPassword isEqualToString:passcode]) {
+        [self.view makeToast:@"绘制成功"];
+        
+        NSMutableDictionary *accountDict = [NSMutableDictionary dictionaryWithDictionary:[USER_DEFAULT objectForKey:ACCOUNT_INFO]];
+        [accountDict setObject:passcode forKey:kGesturePassword];
+        [USER_DEFAULT setObject:accountDict forKey:ACCOUNT_INFO];
+        [USER_DEFAULT synchronize];
+        
+        [self performSelector:@selector(clickBack:) withObject:nil afterDelay:0.5];
+    }
+    
+    if ( ! _hasSet) {
+        self.firstPassword = passcode;
+        _hasSet = YES;
+        self.stateLabel.text = @"请再次绘制解锁图案";
+    }
+    
+    if ( _hasSet && ! [self.firstPassword isEqualToString:passcode]) {
+        self.stateLabel.text = @"与上次输入不一致，请重新设置";
+        self.boxView.passcode = nil;
+        _hasSet = NO;
+        return;
+    }
+    
+    self.boxView.passcode = passcode;
 }
 
 

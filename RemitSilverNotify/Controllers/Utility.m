@@ -29,7 +29,6 @@
 
 + (BOOL)isNetworkReachable
 {
-    DLog(@"网络检查。。。。。。");
     return ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] != NotReachable);
 }
 

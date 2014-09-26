@@ -37,13 +37,24 @@
 @implementation TradeViewController
 
 #pragma mark - Lifecycel
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kGestureLockLoginDidSuccessNotification object:nil];
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createLeftAndRightView) name:kGestureLockLoginDidSuccessNotification object:nil];
     }
     return self;
+}
+
+- (void)createLeftAndRightView
+{
+    [self createLeftView];
+    [self createRightView];
 }
 
 - (void)viewDidLoad
@@ -76,6 +87,12 @@
 {
     [super viewDidAppear:animated];
 
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
 }
 
 - (void)didReceiveMemoryWarning

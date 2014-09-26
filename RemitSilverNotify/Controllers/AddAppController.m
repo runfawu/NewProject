@@ -115,7 +115,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    return 64;
 }
 
 #define kAddAppSelectButtonTag      430
@@ -208,8 +208,8 @@
         NSDictionary *resultDict = result;
         if (IS_OK(resultDict)) {
             SHOW_ERROR_MESSAGE_TOAST(weakSelf.view);
-            [USER_DEFAULT setBool:YES forKey:kDidAddOrDeleteAppNotification];
-            [USER_DEFAULT synchronize];
+//            [USER_DEFAULT setBool:YES forKey:kDidAddOrDeleteAppNotification];
+//            [USER_DEFAULT synchronize];
             [self performSelector:@selector(clickBack:) withObject:nil afterDelay:kToastDefaultDuration];
         } else {
             SHOW_ERROR_MESSAGE_TOAST(weakSelf.view);

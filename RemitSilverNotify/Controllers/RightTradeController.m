@@ -12,6 +12,7 @@
 #import "EGOViewCommon.h"
 #import "NoDataCell.h"
 #import "TradeCell.h"
+#import "AppWebController.h"
 
 @interface RightTradeController ()<EGORefreshTableDelegate,UITableViewDataSource, UITableViewDelegate>
 
@@ -29,11 +30,17 @@
 
 @implementation RightTradeController
 
+#pragma mark - Lifecycle
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kGestureLockLoginDidSuccessNotification object:nil];
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestDataOfAllTrade) name:kGestureLockLoginDidSuccessNotification object:nil];
     }
     return self;
 }
@@ -74,6 +81,7 @@
 #pragma mark - Private methods
 - (void)setup
 {
+    self.view.backgroundColor = UIRGBMAKE(239, 247, 246);
     self.tableView.hidden = YES;
     self.page = 1;
     self.tradeArray = [NSMutableArray array];
@@ -86,6 +94,7 @@
 - (void)requestDataOfAllTrade
 {
     CHECK_NETWORK_AND_SHOW_TOAST(self.view);
+    DLog(@"555555555555555");
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     NSString *url = [NSString stringWithFormat:@"%@/order/getPersonalTradeDetail.do", HOST_URL];
@@ -129,7 +138,9 @@
         if (dataArray.count > 0) {
             for (NSDictionary *dict in dataArray) {
                 TradeObject *obj = [[TradeObject alloc] initWithDict:dict];
-                [self.tradeArray addObject:obj];
+                if ([obj.statusname isEqualToString:@"等待付款"]) {
+                    [self.tradeArray addObject:obj];
+                }
             }
         }
         
@@ -188,7 +199,23 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    DLog(@"....");
+   
+    if (self.tradeArray.count > 0) {
+        TradeCell *cell = (TradeCell *)[tableView cellForRowAtIndexPath:indexPath];
+        
+        AppWebController *webController = [[AppWebController alloc] initWithNibName:@"AppWebController" bundle:nil];
+        webController.urlString = cell.tradeObj.paylinkurl;
+        
+        CATransition *transition = [CATransition animation];
+        transition.duration = 0.3;
+        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        transition.type = kCATransitionPush;
+        transition.subtype = kCATransitionFromRight;
+        [self.view.window.layer addAnimation:transition forKey:nil];
+        
+        UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:webController];
+        [self.view.window.rootViewController presentViewController:navi animated:NO completion:nil];
+    }
 }
 
 #pragma mark - EGORefreshTableDelegate Methods

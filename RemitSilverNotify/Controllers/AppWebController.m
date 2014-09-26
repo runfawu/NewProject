@@ -35,9 +35,6 @@
     }
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.urlString]]];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    
-    
-    
 }
 
 - (void)didReceiveMemoryWarning
