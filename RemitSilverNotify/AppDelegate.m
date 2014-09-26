@@ -6,11 +6,10 @@
 //  Copyright (c) 2014年 iOS_Group. All rights reserved.
 //
 
-#define kHasLaunched      @"hasLaunched"
-
 #import "AppDelegate.h"
-
+#import "GestureLockController.h"
 #import "WelComeController.h"
+#import "GestureLockView.h"
 
 @implementation AppDelegate
 
@@ -51,7 +50,14 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     DLog(@"applicationWillEnterForeground");
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    
+    NSString *gesturePassword = [USER_DEFAULT objectForKey:kGesturePassword];
+    if (gesturePassword) {
+        GestureLockView *lockView = [GestureLockView loadNibInstance];
+        
+        [self.window addSubview:lockView];
+    
+    }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application

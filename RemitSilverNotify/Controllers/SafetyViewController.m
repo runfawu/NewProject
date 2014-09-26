@@ -9,6 +9,7 @@
 #import "SafetyViewController.h"
 #import "ResestLoginPwdController.h"
 #import "QRDetailController.h"
+#import "SetGestureLockController.h"
 
 @interface SafetyViewController ()
 
@@ -35,6 +36,16 @@
     [self setup];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    NSString *gesturePassword = [USER_DEFAULT objectForKey:kGesturePassword];
+    if (gesturePassword) {
+        self.statusLabel.text = @"开启";
+    }
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -44,13 +55,14 @@
 - (void)setup
 {
     self.view.backgroundColor = UIRGBMAKE(239, 247, 246);
-   
-
 }
 
 #pragma mark - Button events
+//手势密码锁定
 - (IBAction)gestureLockButtonClicked:(UIButton *)sender {
+    SetGestureLockController *gestureLockController = [[SetGestureLockController alloc] initWithNibName:@"SetGestureLockController" bundle:nil];
     
+    [self.navigationController pushViewController:gestureLockController animated:YES];
     
 }
 

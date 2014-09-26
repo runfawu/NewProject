@@ -33,14 +33,15 @@
     return ([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] != NotReachable);
 }
 
-+ (UIImage *)createImageWithColor:(UIColor *)color rect:(CGRect)rect
++ (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size
 {
-    CGRect rectRE = CGRectMake(0, 0, rect.size.width, rect.size.height);
-    
+    CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
+    
     CGContextSetFillColorWithColor(context, [color CGColor]);
-    CGContextFillRect(context, rectRE);
+    CGContextFillRect(context, rect);
+    
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     

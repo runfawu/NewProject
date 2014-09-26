@@ -9,6 +9,8 @@
 #ifndef RemitSilverNotify_Constants_h
 #define RemitSilverNotify_Constants_h
 
+#define kHasLaunched      @"hasLaunched"
+
 #define kUserInfo      @"userInfo"
 #define kHasLogin      @"hasLogin"
 #define kUserInfoDict  @"userInfoDict"
@@ -25,6 +27,9 @@
 #define kToastDefaultDuration    1.2
 
 #define kTradeCellHeight    143
+
+#define kGesturePassword   @"gesturePassword"
+#define kHasSetGesturePassword   @"hasSetGesturePassword"
 
 
 #endif

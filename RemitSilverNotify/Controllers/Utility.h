@@ -13,7 +13,7 @@
 + (BOOL)isValidMobile:(NSString *)mobile;
 + (BOOL)isNetworkReachable;
 + (BOOL)isValidPassword:(NSString *)password;
-+ (UIImage *)createImageWithColor:(UIColor *)color rect:(CGRect)rect;
++ (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size;
 + (NSString *)getFormerDateWithMonthAgo:(NSInteger)monthAgo;
 + (UIImage *)makeRoundedImage:(UIImage *)image radius:(float)radius;
 
